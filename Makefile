@@ -15,5 +15,9 @@ start_web5: stop ## Запустить контейнер
 start_web7: stop ## Запустить контейнер
 	@docker-compose up -d web7
 
+update:
+	@rm -rf php/wa-apps/shop/komtetkassa &&\
+	 cp -r komtetkassa php/wa-apps/shop/plugins
+
 .PHONY: help
 .DEFAULT_GOAL := help
