@@ -77,7 +77,6 @@ class shopKomtetdelivery {
             );
         }
 
-
         $couriers = array(
             'namespace' => $namespace,
             'value' => isset($settings) ? $settings : 0,
