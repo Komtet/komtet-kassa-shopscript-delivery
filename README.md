@@ -55,3 +55,8 @@ make start_web7
 ```sh
 make stop
 ```
+
+* Установить/Обновить модуль в cms
+```sh
+make update
+```

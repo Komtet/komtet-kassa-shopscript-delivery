@@ -9,15 +9,15 @@ build:  ## Собрать контейнер
 stop: ## Остановить все контейнеры
 	@docker-compose down
 
-start_web5: stop ## Запустить контейнер
+start_web5: stop  ## Запустить контейнер
 	@docker-compose up -d web5
 
-start_web7: stop ## Запустить контейнер
+start_web7: stop  ## Запустить контейнер
 	@docker-compose up -d web7
 
-update:
-	@rm -rf php/wa-apps/shop/komtetkassa &&\
-	 cp -r komtetkassa php/wa-apps/shop/plugins
+update:  ## Установить/Обновить модуль
+	@rm -rf php/wa-apps/shop/komtetdelivery &&\
+	 cp -r komtetdelivery php/wa-apps/shop/plugins
 
 .PHONY: help
 .DEFAULT_GOAL := help

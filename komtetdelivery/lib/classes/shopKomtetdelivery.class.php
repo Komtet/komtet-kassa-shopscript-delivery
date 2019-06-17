@@ -2,9 +2,15 @@
 
 use Komtet\KassaSdk\Vat;
 
-class shopKomtetkassa {
+use Komtet\KassaSdk\Client;
+use Komtet\KassaSdk\CourierManager;
+use Komtet\KassaSdk\Exception\SdkException;
 
-    const PLUGIN_ID = 'komtetkassa';
+
+class shopKomtetdelivery {
+
+    const PLUGIN_ID = 'komtetdelivery';
+		const ERRO_LOG = 'shop/plugins/komtetdelivery/errors.log';
 
     public static function taxTypesValues() {
 
@@ -66,4 +72,23 @@ class shopKomtetkassa {
 				);
         return $data;
     }
+
+		public static function getCourierList() {
+			  $plugin = waSystem::getInstance()->getPlugin('komtetdelivery', true);
+				$shop_id = $plugin->getSettings("komtet_shop_id");
+				$secret_id = $plugin->getSettings("komtet_secret_key");
+				$client = new Client($shop_id, $secret_id);
+				$courierManager  = new CourierManager($client);
+				try{
+					$courierList = $courierManager::getCouriers('0', '100');
+				}
+				catch (SdkException $e){
+					waLog::log($e->getMessage(), self::LOG_FILE_NAME);
+					return null;
+				}
+				var_dump($courierList);
+				die();
+				// return null;
+    }
+
 }
