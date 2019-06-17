@@ -43,52 +43,60 @@ class shopKomtetdelivery {
         return $data;
     }
 
-    public static function vatValues() {
-        $data = array(
-            array(
-                'value' => Vat::RATE_NO,
-                'title' => 'Без НДС',
-            ),
-            array(
-                'value' => Vat::RATE_0,
-                'title' => 'НДС 0%',
-            ),
-            array(
-                'value' => Vat::RATE_10,
-                'title' => 'НДС 10%',
-            ),
-            array(
-                'value' => Vat::RATE_18,
-                'title' => 'НДС 18%',
-            ),
-            array(
-                'value' => Vat::RATE_110,
-                'title' => 'НДС 10/110',
-            ),
-            array(
-                'value' => Vat::RATE_118,
-                'title' => 'НДС 18/118',
-            )
-				);
-        return $data;
-    }
-
 		public static function getCourierList() {
-			  $plugin = waSystem::getInstance()->getPlugin('komtetdelivery', true);
-				$shop_id = $plugin->getSettings("komtet_shop_id");
-				$secret_id = $plugin->getSettings("komtet_secret_key");
-				$client = new Client($shop_id, $secret_id);
-				$courierManager  = new CourierManager($client);
-				try{
-					$courierList = $courierManager::getCouriers('0', '100');
-				}
-				catch (SdkException $e){
-					waLog::log($e->getMessage(), self::LOG_FILE_NAME);
-					return null;
-				}
-				var_dump($courierList);
-				die();
-				// return null;
-    }
+        $plugin = waSystem::getInstance()->getPlugin(self::PLUGIN_ID, true);
+        $shop_id = $plugin->getSettings('komtet_shop_id');
+        $secret_key = $plugin->getSettings("komtet_secret_key");
 
+				$settings = $plugin->getSettings('komtet_default_courier');
+				$namespace = wa()->getApp().'_'.self::PLUGIN_ID;
+
+				if (!empty($shop_id) and !empty($secret_key)) {
+						try {
+								$courierManager = new CourierManager(new Client($shop_id, $secret_key));
+								$kk_couriers = $courierManager->getCouriers('0', '100')['couriers'];
+						}
+						catch (SdkException $e) {
+								return waHtmlControl::getControl(
+										waHtmlControl::TITLE,
+										'komtet_default_courier',
+										array(
+												'value' => "'Идентификатор магазина' или 'Секретный ключ магазин' ".
+																	"введены неверно",
+										)
+								);
+						}
+				} else {
+						return waHtmlControl::getControl(
+								waHtmlControl::TITLE,
+								'komtet_default_courier',
+								array(
+										'value' => "Заполните 'Идентификатор магазина' и 'Секретный ключ магазин' ".
+															"сохраните изменения и обновите страницу",
+								)
+						);
+				}
+
+
+				$couriers = array(
+						'namespace' => $namespace,
+						'value' => isset($settings) ? $settings : 0,
+						'options' => array(
+								array('value' => 0, 'title' => 'Не выбрано')
+						)
+				);
+
+				foreach ($kk_couriers as $kk_courier) {
+						array_push($couriers['options'], array(
+								'value' => $kk_courier['id'],
+								'title' => $kk_courier['name']
+						));
+				}
+
+        return waHtmlControl::getControl(
+						waHtmlControl::SELECT,
+						'komtet_default_courier',
+						$couriers
+				);
+    }
 }

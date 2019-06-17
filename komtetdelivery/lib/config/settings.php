@@ -1,4 +1,5 @@
 <?php
+
 $settings = array(
 		'komtet_shop_id'  => array(
 				'title'        => "Идентификатор магазина",
@@ -32,19 +33,18 @@ $settings = array(
             "Создавать заказы на доствку в КОМТЕТ Касса Курьер при изменение статус заказа ".
 						"на 'Отгружен'.<br><br>"
         ),
-        'value'        => 0, // значение по умолчанию
+        'value'        => 1, // значение по умолчанию
         'control_type' => waHtmlControl::CHECKBOX,
     ),
-		'komtet_default_courier'  => array(
-        'title'        => "Курьер по умолчанию",
-        'description'  => array(
-            "Создавать заказы на доствку по умолчанию для выбранного курьераю .<br><br>"
-        ),
-        'value'        => 0, // значение по умолчанию
-        'control_type' => waHtmlControl::SELECT,
-				'options_callback' => array('shopKomtetdelivery', 'getCourierList')
-    ),
+		'komtet_default_courier' => array(
+				'title'        => "Курьер по умолчанию",
+				'description'  => array(
+						"Создавать заказы на доствку по умолчанию для выбранного курьераю .<br><br>"
+				),
+				'control_type' => waHtmlControl::CUSTOM . ' shopKomtetdelivery::getCourierList'
+		)
 );
+
 return $settings;
 
 //EOF
