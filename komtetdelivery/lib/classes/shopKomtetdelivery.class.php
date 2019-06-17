@@ -1,9 +1,7 @@
 <?php
-
-use Komtet\KassaSdk\Vat;
-
 use Komtet\KassaSdk\Client;
 use Komtet\KassaSdk\CourierManager;
+use Komtet\KassaSdk\Vat;
 use Komtet\KassaSdk\Exception\SdkException;
 
 
