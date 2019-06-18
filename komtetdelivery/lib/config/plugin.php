@@ -11,4 +11,3 @@ return array(
     ),
     'img' => 'img/icon_16x16.png'
 );
-//EOF

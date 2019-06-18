@@ -11,4 +11,3 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
         die();
     }
 }
-//EOF

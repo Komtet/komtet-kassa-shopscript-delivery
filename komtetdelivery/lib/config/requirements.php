@@ -16,4 +16,3 @@ return array(
         'version'=>'>=5.6.38',
     ),
 );
-//EOF
