@@ -6,4 +6,3 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
     private function init() {
     }
 }
-//EOF
