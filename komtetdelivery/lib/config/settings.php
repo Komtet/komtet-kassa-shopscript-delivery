@@ -44,7 +44,4 @@ $settings = array(
         'control_type' => waHtmlControl::CUSTOM . ' shopKomtetdelivery::getCourierList'
     )
 );
-
 return $settings;
-
-//EOF

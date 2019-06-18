@@ -8,4 +8,3 @@ return array(
     'frontend' => true,
     'img' => 'img/icon_16x16.png'
 );
-//EOF
