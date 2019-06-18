@@ -5,7 +5,7 @@ use Komtet\KassaSdk\Vat;
 use Komtet\KassaSdk\Exception\SdkException;
 
 
-class shopKomtetdelivery {
+class ShopKomtetDelivery {
 
     const PLUGIN_ID = 'komtetdelivery';
     const ERRO_LOG = 'shop/plugins/komtetdelivery/errors.log';
@@ -54,8 +54,13 @@ class shopKomtetdelivery {
                 waHtmlControl::TITLE,
                 'komtet_default_courier',
                 array(
+<<<<<<< HEAD
                     'value' => "Заполните 'Идентификатор магазина' и 'Секретный ключ магазин' ".
                               "сохраните изменения и обновите страницу",
+=======
+                    'value' => "Заполните 'Идентификатор магазина' и 'Секретный ключ магазина' ".
+                               "сохраните изменения и обновите страницу",
+>>>>>>> 30258651219f67032c3fa8e7b24d5eff3a4a0b21
                 )
             );
         } else {
@@ -68,8 +73,8 @@ class shopKomtetdelivery {
                     waHtmlControl::TITLE,
                     'komtet_default_courier',
                     array(
-                        'value' => "'Идентификатор магазина' или 'Секретный ключ магазин' ".
-                                  "введены неверно",
+                        'value' => "'Идентификатор магазина' или 'Секретный ключ магазина' ".
+                                   "введены неверно",
                     )
                 );
             }
