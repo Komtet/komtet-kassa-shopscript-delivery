@@ -58,21 +58,21 @@ class ShopKomtetDelivery {
                                "сохраните изменения и обновите страницу",
                 )
             );
-        } else {
-            try {
-                $courierManager = new CourierManager(new Client($shop_id, $secret_key));
-                $kk_couriers = $courierManager->getCouriers('0', '100')['couriers'];
-            }
-            catch (SdkException $e) {
-                return waHtmlControl::getControl(
-                    waHtmlControl::TITLE,
-                    'komtet_default_courier',
-                    array(
-                        'value' => "'Идентификатор магазина' или 'Секретный ключ магазина' ".
-                                   "введены неверно",
-                    )
-                );
-            }
+        }
+
+        $courierManager = new CourierManager(new Client($shop_id, $secret_key));
+        try {
+            $kk_couriers = $courierManager->getCouriers('0', '100')['couriers'];
+        }
+        catch (SdkException $e) {
+            return waHtmlControl::getControl(
+                waHtmlControl::TITLE,
+                'komtet_default_courier',
+                array(
+                    'value' => "'Идентификатор магазина' или 'Секретный ключ магазина' ".
+                               "введены неверно",
+                )
+            );
         }
 
         $couriers = array(
