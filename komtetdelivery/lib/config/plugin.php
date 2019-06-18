@@ -6,6 +6,9 @@ return array(
     'version' => '1.0.0',
     'vendor' => 1087963,
     'frontend' => true,
+    'handlers' => array(
+        'order_action.ship' => 'shipment'
+    ),
     'img' => 'img/icon_16x16.png'
 );
 //EOF
