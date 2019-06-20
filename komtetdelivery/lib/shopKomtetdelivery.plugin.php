@@ -172,7 +172,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
 
     private function getPaymentType($order_id) {
         $payment_id = (new shoporderParamsModel())->getByField(array('order_id' => $order_id,
-                                                                            'name' => 'payment_id'))['value'];
+                                                                     'name' => 'payment_id'))['value'];
         if (!isset($this->komtet_payment_types[$payment_id])) {
             waLog::dump(sprintf("Payment ID [%s] not found in settings", $payment_id),
                         LOG_PATH);
