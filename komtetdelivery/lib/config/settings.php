@@ -42,6 +42,21 @@ $settings = array(
             "Создавать заказы на доствку по умолчанию для выбранного курьераю .<br><br>"
         ),
         'control_type' => waHtmlControl::CUSTOM . ' shopKomtetdelivery::getCourierList'
-    )
+    ),
+    'komtet_shipping' => array(
+        'title'        => "Доставка",
+        'description'  => array(
+            "Создавать заказы на доставку если указан этот вид доставки .<br><br>"
+        ),
+        'control_type' => waHtmlControl::CUSTOM . ' shopKomtetdelivery::getShippingList'
+    ),
+    'komtet_payment_types' => array(
+        'title'        => "Способы оплаты",
+        'description' => array(
+            "Выбирете способы оплаты, для которых будет проводиться создание заказов, ".
+            "какому средству оплаты соответствует выбранный способ<br><br>"
+        ),
+        'control_type' => waHtmlControl::CUSTOM . ' shopKomtetdelivery::getPaymentTypes'
+    ),
 );
 return $settings;

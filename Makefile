@@ -16,7 +16,7 @@ start_web7: stop  ## Запустить контейнер
 	@docker-compose up -d web7
 
 update:  ## Установить/Обновить модуль
-	@rm -rf php/wa-apps/shop/komtetdelivery &&\
+	@rm -rf php/wa-apps/shop/plugins/komtetdelivery &&\
 	 cp -r komtetdelivery php/wa-apps/shop/plugins
 
 .PHONY: help
