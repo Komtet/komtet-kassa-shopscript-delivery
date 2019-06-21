@@ -6,7 +6,7 @@ $settings = array(
         'description'  => array(
             "Идентификатор вы найдете в личном кабинете КОМТЕТ: <a href='https://kassa.komtet.ru/manage/shops'>Магазины</a><br><br>"
         ),
-        'value'        => '', // значение по умолчанию
+        'value'        => '',
         'control_type' => waHtmlControl::INPUT,
     ),
     'komtet_secret_key'  => array(
@@ -15,7 +15,7 @@ $settings = array(
             "Ключ вы найдете в личном кабинете КОМТЕТ, в настройках выбранного магазина: " .
                 "<a href='https://kassa.komtet.ru/manage/shops'>Магазины</a><br><br>"
         ),
-        'value'        => '', // значение по умолчанию
+        'value'        => '',
         'control_type' => waHtmlControl::INPUT,
     ),
     'komtet_tax_type'  => array(
@@ -23,7 +23,7 @@ $settings = array(
         'description'  => array(
             "Выберите систему налогообложения.<br><br>"
         ),
-        'value'        => 0, // значение по умолчанию
+        'value'        => 0,
         'control_type' => waHtmlControl::SELECT,
         'options_callback' => array('shopKomtetdelivery', 'taxTypesValues')
     ),
@@ -33,7 +33,7 @@ $settings = array(
             "Создавать заказы на доствку в КОМТЕТ Касса Курьер при изменение статус заказа " .
                 "на 'Отгружен'.<br><br>"
         ),
-        'value'        => 1, // значение по умолчанию
+        'value'        => 1,
         'control_type' => waHtmlControl::CHECKBOX,
     ),
     'komtet_default_courier' => array(
