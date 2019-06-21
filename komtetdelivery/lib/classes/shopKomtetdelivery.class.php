@@ -198,8 +198,7 @@ HTML;
             $(function() {
                 var enable_disable_select = function() {
                 var _t = $(this);
-                _t.parents('tr').find('select')
-                .prop('disabled', !_t.is(':checked'));
+                _t.parents('tr').find('select').prop('disabled', !_t.is(':checked'));
             }
             $('input[type="checkbox"].komtet_payment_types_class')
                 .on('change', enable_disable_select)
