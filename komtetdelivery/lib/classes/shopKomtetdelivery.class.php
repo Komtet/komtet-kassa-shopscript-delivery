@@ -48,7 +48,7 @@ class ShopKomtetDelivery
         $shop_id = $plugin->getSettings('komtet_shop_id');
         $secret_key = $plugin->getSettings("komtet_secret_key");
 
-        $courier = $plugin->getSettings('komtet_default_courier');
+        $default_courier = $plugin->getSettings('komtet_default_courier');
         $namespace = wa()->getApp() . '_' . self::PLUGIN_ID;
 
         if (empty($shop_id) or empty($secret_key)) {
@@ -78,7 +78,7 @@ class ShopKomtetDelivery
 
         $couriers = array(
             'namespace' => $namespace,
-            'value' => isset($courier) ? $courier : 0,
+            'value' => isset($default_courier) ? $default_courier : 0,
             'options' => array(
                 array('value' => 0, 'title' => 'Не выбрано')
             )
