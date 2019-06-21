@@ -25,7 +25,6 @@ class shopKomtetdeliveryPlugin extends shopPlugin
     private $komtet_shipping;
 
     private $order_id;
-    // private $discount_percent;
 
     private function init()
     {
