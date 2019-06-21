@@ -1,18 +1,18 @@
 <?php
 
 return array(
-    'php.curl'=>array(
+    'php.curl' => array(
         'name' => 'cURL',
         'description' => 'Требуется для отправки запроса фискализации на удаленный сервер КОМТЕТ',
         'strict' => true
     ),
-    'php.hash'=>array(
+    'php.hash' => array(
         'name' => 'Hash',
         'description' => 'Требуется для подписи запроса фискализации на удаленный сервер КОМТЕТ',
         'strict' => true
     ),
-    'php'=>array(
-        'strict'=>true,
-        'version'=>'>=5.6.38',
+    'php' => array(
+        'strict' => true,
+        'version' => '>=5.6.38',
     ),
 );

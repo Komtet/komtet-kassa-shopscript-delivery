@@ -1,8 +1,9 @@
 <?php
 
-require __DIR__.'/vendors/komtet-kassa-php-sdk/autoload.php';
+require __DIR__ . '/vendors/komtet-kassa-php-sdk/autoload.php';
 
-class shopKomtetdeliveryPlugin extends shopPlugin {
-    private function init() {
-    }
+class shopKomtetdeliveryPlugin extends shopPlugin
+{
+    private function init()
+    { }
 }
