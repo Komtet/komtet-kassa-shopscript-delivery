@@ -12,7 +12,6 @@ class ShopKomtetDelivery
 
     public static function taxTypesValues()
     {
-
         $data = array(
             array(
                 'value' => 0,

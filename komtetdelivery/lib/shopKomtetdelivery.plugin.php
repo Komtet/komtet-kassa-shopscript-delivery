@@ -17,7 +17,6 @@ const TYPE_SERVICE = 'service';
 
 class shopKomtetdeliveryPlugin extends shopPlugin
 {
-
     private $komtet_shop_id;
     private $komtet_secret_key;
     private $komtet_tax_type;
