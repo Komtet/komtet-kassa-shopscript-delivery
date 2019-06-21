@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__.'/vendors/komtet-kassa-php-sdk/autoload.php';
+require __DIR__ . '/vendors/komtet-kassa-php-sdk/autoload.php';
 
 use Komtet\KassaSdk\Exception\SdkException;
 use Komtet\KassaSdk\Client;
@@ -15,7 +15,8 @@ const LOG_PATH = 'shop/komtetdelivery/shipment.log';
 const TYPE_SERVICE = 'service';
 
 
-class shopKomtetdeliveryPlugin extends shopPlugin {
+class shopKomtetdeliveryPlugin extends shopPlugin
+{
 
     private $komtet_shop_id;
     private $komtet_secret_key;
@@ -27,7 +28,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
     private $order_id;
     // private $discount_percent;
 
-    private function init() {
+    private function init()
+    {
         $this->komtet_shop_id = $this->getSettings('komtet_shop_id');
         $this->komtet_secret_key = $this->getSettings('komtet_secret_key');
         $this->komtet_tax_type = (int)$this->getSettings('komtet_tax_type');
@@ -40,14 +42,17 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
         $this->shop_order = new shopOrderModel();
     }
 
-    public function shipment($params) {
+    public function shipment($params)
+    {
         $this->init();
         $this->order_id = $params['order_id'];
         $order = $this->shop_order->getById($params['order_id']);
 
-        if (!$this->komtet_complete_action ) {
-            waLog::dump(sprintf('[Order - %s] Заказ не создан, флаг генерации не установлен', $this->order_id),
-                        LOG_PATH);
+        if (!$this->komtet_complete_action) {
+            waLog::dump(
+                sprintf('[Order - %s] Заказ не создан, флаг генерации не установлен', $this->order_id),
+                LOG_PATH
+            );
             return;
         }
 
@@ -74,37 +79,40 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
             return;
         }
 
-        $orderDelivery = new Order($this->order_id,
-                                   'new',
-                                   $this->komtet_tax_type,
-                                   !is_null($order['paid_date']),
-                                   0,
-                                   $payment_type
-                                  );
-        $orderDelivery->setClient(sprintf("%s %s", $shipment_info['city'], $shipment_info['street']),
-                                  $customer_info['phone'],
-                                  $customer_info['email'],
-                                  $customer_info['fullname']
-                                 );
+        $orderDelivery = new Order(
+            $this->order_id,
+            'new',
+            $this->komtet_tax_type,
+            !is_null($order['paid_date']),
+            0,
+            $payment_type
+        );
+        $orderDelivery->setClient(
+            sprintf("%s %s", $shipment_info['city'], $shipment_info['street']),
+            $customer_info['phone'],
+            $customer_info['email'],
+            $customer_info['fullname']
+        );
 
         $positions = $this->getPositionsInfo($this->order_id);
         foreach ($positions as $position) {
             $orderDelivery->addPosition($position);
         }
-        $orderDelivery->applyDiscount(round($order['discount'],2));
+        $orderDelivery->applyDiscount(round($order['discount'], 2));
 
         $shipingVatRate = Vat::RATE_NO;
         if ($this->komtet_tax_type === TaxSystem::COMMON) {
             $shipingVatRate = strval(round($shipment_info['vat'], 2));
         }
-        $orderDelivery->addPosition(new OrderPosition(['oid' => $shipment_info['id'],
-                                                       'name' => $shipment_info['name'],
-                                                       'price'=> round(floatval($order['shipping']), 2),
-                                                       'quantity' => 1,
-                                                       'type' => TYPE_SERVICE,
-                                                       'vat' => strval($shipingVatRate),
-                                                       'measure_name' => MEASURE_NAME
-                                                      ]));
+        $orderDelivery->addPosition(new OrderPosition([
+            'oid' => $shipment_info['id'],
+            'name' => $shipment_info['name'],
+            'price' => round(floatval($order['shipping']), 2),
+            'quantity' => 1,
+            'type' => TYPE_SERVICE,
+            'vat' => strval($shipingVatRate),
+            'measure_name' => MEASURE_NAME
+        ]));
 
         $orderDelivery->setDeliveryTime(
             substr($shipment_info['date_start'], 0, -3),
@@ -128,15 +136,19 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
             waLog::dump($e->getMessage(), LOG_PATH);
         } finally {
             $this->komtet_delivery_model->updateByField(
-                'order_id', $this->order_id,
-                array('request' => json_encode($orderDelivery->asArray()),
-                      'response' => json_encode($response),
-                      'kk_id' => !is_null($kkd_order['kk_id']) ? $kkd_order['kk_id'] : $response['id'])
+                'order_id',
+                $this->order_id,
+                array(
+                    'request' => json_encode($orderDelivery->asArray()),
+                    'response' => json_encode($response),
+                    'kk_id' => !is_null($kkd_order['kk_id']) ? $kkd_order['kk_id'] : $response['id']
+                )
             );
         }
     }
 
-    private function getCustomerInfo($customer_id) {
+    private function getCustomerInfo($customer_id)
+    {
         $wa_contact = new waContactModel();
         $wa_contact_data = new waContactDataModel();
         $wa_contact_emails = new waContactEmailsModel();
@@ -149,7 +161,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
         return $customer;
     }
 
-    private function getShipmentInfo($order_id) {
+    private function getShipmentInfo($order_id)
+    {
         $shop_order_params = (new shoporderParamsModel())->getByField('order_id', $order_id, true);
 
         $params = array();
@@ -170,47 +183,58 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
         return $shipment;
     }
 
-    private function getPaymentType($order_id) {
-        $payment_id = (new shoporderParamsModel())->getByField(array('order_id' => $order_id,
-                                                                     'name' => 'payment_id'))['value'];
+    private function getPaymentType($order_id)
+    {
+        $payment_id = (new shoporderParamsModel())->getByField(array(
+            'order_id' => $order_id,
+            'name' => 'payment_id'
+        ))['value'];
         if (!isset($this->komtet_payment_types[$payment_id])) {
-            waLog::dump(sprintf("Payment ID [%s] not found in settings", $payment_id),
-                        LOG_PATH);
+            waLog::dump(
+                sprintf("Payment ID [%s] not found in settings", $payment_id),
+                LOG_PATH
+            );
             return false;
         }
         return $this->komtet_payment_types[$payment_id]['payment_type'];
     }
 
-    private function getPositionsInfo($order_id) {
-        $order_positions= array_map(function($position){
+    private function getPositionsInfo($order_id)
+    {
+        $order_positions = array_map(function ($position) {
             $itemVatRate = Vat::RATE_NO;
             if ($this->komtet_tax_type === TaxSystem::COMMON) {
                 $itemVatRate = strval(round($position['tax_percent'], 2));
             }
-            return new OrderPosition(['oid' => $position['id'],
-                                      'name' => $position['name'],
-                                      'price' => round(floatval($position['price']), 2),
-                                      'quantity' => round(floatval($position['quantity']), 2),
-                                      'vat' => $itemVatRate,
-                                      'measure_name' => MEASURE_NAME
-                                    ]);
+            return new OrderPosition([
+                'oid' => $position['id'],
+                'name' => $position['name'],
+                'price' => round(floatval($position['price']), 2),
+                'quantity' => round(floatval($position['quantity']), 2),
+                'vat' => $itemVatRate,
+                'measure_name' => MEASURE_NAME
+            ]);
         }, (new shopOrderItemsModel())->getByField('order_id', $order_id, true));
         return $order_positions;
     }
 
-    private function optionsValidate() {
+    private function optionsValidate()
+    {
         $options = [
-            'komtet_shop_id' => $this->komtet_shop_id ,
+            'komtet_shop_id' => $this->komtet_shop_id,
             'komtet_secret_key' => $this->komtet_secret_key,
             'komtet_shipping' => $this->komtet_shipping,
             'komtet_payment_types' => $this->komtet_payment_types,
         ];
         foreach ($options as $key => $value) {
             if (is_null($value) or $value === 0) {
-                waLog::dump(sprintf("Options field [%s] is empty", $key),
-                            LOG_PATH);
+                waLog::dump(
+                    sprintf("Options field [%s] is empty", $key),
+                    LOG_PATH
+                );
                 $this->komtet_delivery_model->updateByField(
-                    'order_id', $this->order_id,
+                    'order_id',
+                    $this->order_id,
                     array('request', 'options validation error')
                 );
                 return false;
@@ -219,13 +243,17 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
         return true;
     }
 
-    private function customerValidate($customer_info) {
+    private function customerValidate($customer_info)
+    {
         foreach ($customer_info as $key => $value) {
             if (is_null($value)) {
-                waLog::dump(sprintf("Customer field [%s] is empty", $key),
-                            LOG_PATH);
+                waLog::dump(
+                    sprintf("Customer field [%s] is empty", $key),
+                    LOG_PATH
+                );
                 $this->komtet_delivery_model->updateByField(
-                    'order_id', $this->order_id,
+                    'order_id',
+                    $this->order_id,
                     array('request', 'customer validation error')
                 );
                 return false;
@@ -234,23 +262,31 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
         return true;
     }
 
-    private function shipmentValidate($shipment_info) {
+    private function shipmentValidate($shipment_info)
+    {
         foreach ($shipment_info as $key => $value) {
             if (is_null($value)) {
-                waLog::dump(sprintf("Shipmnent field [%s] is empty", $key),
-                            LOG_PATH);
+                waLog::dump(
+                    sprintf("Shipmnent field [%s] is empty", $key),
+                    LOG_PATH
+                );
                 $this->komtet_delivery_model->updateByField(
-                    'order_id', $this->order_id,
+                    'order_id',
+                    $this->order_id,
                     array('request', 'shipment validation error')
                 );
                 return false;
             }
         }
         if (intval($shipment_info['id']) !== $this->komtet_shipping) {
-            waLog::dump(sprintf("Shipmnent id [%s] not equal to settings [%d]",
-                                $shipment_info['id'],
-                                $this->komtet_shipping),
-                        LOG_PATH);
+            waLog::dump(
+                sprintf(
+                    "Shipmnent id [%s] not equal to settings [%d]",
+                    $shipment_info['id'],
+                    $this->komtet_shipping
+                ),
+                LOG_PATH
+            );
             return false;
         }
         return true;
