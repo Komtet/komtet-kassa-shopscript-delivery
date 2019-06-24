@@ -39,7 +39,7 @@ $settings = array(
     'komtet_default_courier' => array(
         'title'        => "Курьер по умолчанию",
         'description'  => array(
-            "Создавать заказы на доствку по умолчанию для выбранного курьераю .<br><br>"
+            "Создавать заказы на доствку по умолчанию для выбранного курьера .<br><br>"
         ),
         'control_type' => waHtmlControl::CUSTOM . ' shopKomtetdelivery::getCourierList'
     ),
