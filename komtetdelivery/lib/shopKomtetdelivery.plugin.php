@@ -122,7 +122,6 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         }
 
         $callbackUrl = $this->getCallbackUrl($this->order_id);
-        $this->writeLog($callbackUrl);
         $orderDelivery->setCallbackUrl($callbackUrl);
 
         $ordermanager = new OrderManager(new Client($this->komtet_shop_id, $this->komtet_secret_key));
