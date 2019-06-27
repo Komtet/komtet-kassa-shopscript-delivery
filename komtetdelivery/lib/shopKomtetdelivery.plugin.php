@@ -47,9 +47,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         $order = $this->shop_order->getById($params['order_id']);
 
         if (!$this->komtet_complete_action) {
-            waLog::dump(
-                sprintf('[Order - %s] Заказ не создан, флаг генерации не установлен', $this->order_id),
-                LOG_PATH
+            $this->writeLog(
+                sprintf('[Order - %s] Заказ не создан, флаг генерации не установлен', $this->order_id)
             );
             return;
         }
@@ -122,6 +121,9 @@ class shopKomtetdeliveryPlugin extends shopPlugin
             $orderDelivery->setCourierId($this->komtet_default_courier);
         }
 
+        $callbackUrl = $this->getCallbackUrl($this->order_id);
+        $orderDelivery->setCallbackUrl($callbackUrl);
+
         $ordermanager = new OrderManager(new Client($this->komtet_shop_id, $this->komtet_secret_key));
         $kkd_order = $this->komtet_delivery_model->getByField('order_id', $this->order_id);
         try {
@@ -131,7 +133,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
                 $response = $ordermanager->updateOrder($kkd_order['kk_id'], $orderDelivery);
             }
         } catch (SdkException $e) {
-            waLog::dump($e->getMessage(), LOG_PATH);
+            $this->writeLog($e->getMessage());
         } finally {
             $this->komtet_delivery_model->updateByField(
                 'order_id',
@@ -188,9 +190,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin
             'name' => 'payment_id'
         ))['value'];
         if (!isset($this->komtet_payment_types[$payment_id])) {
-            waLog::dump(
-                sprintf("Payment ID [%s] not found in settings", $payment_id),
-                LOG_PATH
+            $this->writeLog(
+                sprintf("Payment ID [%s] not found in settings", $payment_id)
             );
             return false;
         }
@@ -226,9 +227,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         ];
         foreach ($options as $key => $value) {
             if (is_null($value) or $value === 0) {
-                waLog::dump(
-                    sprintf("Options field [%s] is empty", $key),
-                    LOG_PATH
+                $this->writeLog(
+                    sprintf("Options field [%s] is empty", $key)
                 );
                 $this->komtet_delivery_model->updateByField(
                     'order_id',
@@ -245,9 +245,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin
     {
         foreach ($customer_info as $key => $value) {
             if (is_null($value)) {
-                waLog::dump(
-                    sprintf("Customer field [%s] is empty", $key),
-                    LOG_PATH
+                $this->writeLog(
+                    sprintf("Customer field [%s] is empty", $key)
                 );
                 $this->komtet_delivery_model->updateByField(
                     'order_id',
@@ -264,9 +263,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin
     {
         foreach ($shipment_info as $key => $value) {
             if (is_null($value)) {
-                waLog::dump(
-                    sprintf("Shipmnent field [%s] is empty", $key),
-                    LOG_PATH
+                $this->writeLog(
+                    sprintf("Shipmnent field [%s] is empty", $key)
                 );
                 $this->komtet_delivery_model->updateByField(
                     'order_id',
@@ -277,16 +275,32 @@ class shopKomtetdeliveryPlugin extends shopPlugin
             }
         }
         if (intval($shipment_info['id']) !== $this->komtet_shipping) {
-            waLog::dump(
+            $this->writeLog(
                 sprintf(
                     "Shipmnent id [%s] not equal to settings [%d]",
                     $shipment_info['id'],
                     $this->komtet_shipping
-                ),
-                LOG_PATH
+                )
             );
             return false;
         }
         return true;
+    }
+
+    public function getCallbackUrl($order_id)
+    {
+        $routing = wa()->getRouting();
+        $rootUrl = $routing->getUrl('shop/frontend', array(), true);
+
+        return sprintf("%s%s/%s/", $rootUrl, $this->id, $order_id);
+    }
+
+    public function writeLog($message)
+    {
+        if (is_string($message)) {
+            waLog::log($message, LOG_PATH);
+        } else {
+            waLog::dump($message, LOG_PATH);
+        }
     }
 }
