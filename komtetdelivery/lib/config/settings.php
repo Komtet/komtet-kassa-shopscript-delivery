@@ -1,0 +1,62 @@
+<?php
+
+$settings = array(
+    'komtet_shop_id'  => array(
+        'title'        => "Идентификатор магазина",
+        'description'  => array(
+            "Идентификатор вы найдете в личном кабинете КОМТЕТ: <a href='https://kassa.komtet.ru/manage/shops'>Магазины</a><br><br>"
+        ),
+        'value'        => '',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+    'komtet_secret_key'  => array(
+        'title'        => "Секретный ключ магазина",
+        'description'  => array(
+            "Ключ вы найдете в личном кабинете КОМТЕТ, в настройках выбранного магазина: " .
+                "<a href='https://kassa.komtet.ru/manage/shops'>Магазины</a><br><br>"
+        ),
+        'value'        => '',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+    'komtet_tax_type'  => array(
+        'title'        => "Система налогообложения по умолчанию",
+        'description'  => array(
+            "Выберите систему налогообложения.<br><br>"
+        ),
+        'value'        => 0,
+        'control_type' => waHtmlControl::SELECT,
+        'options_callback' => array('shopKomtetdelivery', 'taxTypesValues')
+    ),
+    'komtet_complete_action'  => array(
+        'title'        => " Формировать заявку на доставку при статусе 'Отправлен'",
+        'description'  => array(
+            "Создавать заказы на доствку в КОМТЕТ Касса Курьер при изменение статус заказа " .
+                "на 'Отгружен'.<br><br>"
+        ),
+        'value'        => 1,
+        'control_type' => waHtmlControl::CHECKBOX,
+    ),
+    'komtet_default_courier' => array(
+        'title'        => "Курьер по умолчанию",
+        'description'  => array(
+            "Создавать заказы на доствку по умолчанию для выбранного курьера .<br><br>"
+        ),
+        'control_type' => waHtmlControl::CUSTOM . ' shopKomtetdelivery::getCourierList'
+    ),
+    'komtet_shipping' => array(
+        'title'        => "Доставка",
+        'description'  => array(
+            "Создавать заказы на доставку если указан этот вид доставки .<br><br>"
+        ),
+        'control_type' => waHtmlControl::CUSTOM . ' shopKomtetdelivery::getShippingList'
+    ),
+    'komtet_payment_types' => array(
+        'title'        => "Способы оплаты",
+        'description' => array(
+            "Выбирете способы оплаты, для которых будет проводиться создание заказов, " .
+                "какому средству оплаты соответствует выбранный способ<br><br>"
+        ),
+        'control_type' => waHtmlControl::CUSTOM . ' shopKomtetdelivery::getPaymentTypes'
+    ),
+);
+return $settings;
