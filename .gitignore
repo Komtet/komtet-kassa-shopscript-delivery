@@ -1,2 +1,3 @@
-/php**
-/data**
+/php/**
+/data
+**/vendors/komtet-kassa-php-sdk/**
