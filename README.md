@@ -2,6 +2,7 @@
 
 ## Запуск проекта
 
+* Склонируйте репозиторий включая подмодули для подтягивания SDK - git clone --recurse-submodules
 * Скачать установщик Shopscript CMS - https://developers.webasyst.ru/download/
 
 * Добавить в /etc/hosts  127.0.0.1	shopscript.localhost.com
