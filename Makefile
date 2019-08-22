@@ -19,5 +19,12 @@ update:  ## Установить/Обновить модуль
 	@rm -rf php/wa-apps/shop/plugins/komtetdelivery &&\
 	 cp -r komtetdelivery php/wa-apps/shop/plugins
 
+release:  ## Архивировать для загрузки в маркет
+	@tar\
+	 --exclude='./komtetdelivery/lib/vendors/komtet-kassa-php-sdk/.*'\
+	 --exclude='./komtetdelivery/lib/vendors/komtet-kassa-php-sdk/docker_env'\
+	 --exclude='./komtetdelivery/lib/vendors/komtet-kassa-php-sdk/tests'\
+	 -czvf komtetdelivery.tar.gz komtetdelivery/
+
 .PHONY: help
 .DEFAULT_GOAL := help

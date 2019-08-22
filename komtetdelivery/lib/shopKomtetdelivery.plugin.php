@@ -34,7 +34,6 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         $this->komtet_complete_action = (bool)$this->getSettings('komtet_complete_action');
         $this->komtet_default_courier = (int)$this->getSettings('komtet_default_courier');
         $this->komtet_shipping = (int)$this->getSettings('komtet_shipping');
-        $this->komtet_payment_types = $this->getSettings('komtet_payment_types');
 
         $this->komtet_delivery_model = new shopKomtetdeliveryModel();
         $this->shop_order = new shopOrderModel();
@@ -71,18 +70,12 @@ class shopKomtetdeliveryPlugin extends shopPlugin
             return;
         }
 
-        $payment_type = $this->getPaymentType($this->order_id);
-        if (!$payment_type) {
-            return;
-        }
-
         $orderDelivery = new Order(
             $this->order_id,
             'new',
             $this->komtet_tax_type,
             !is_null($order['paid_date']),
-            0,
-            $payment_type
+            0
         );
         $orderDelivery->setClient(
             sprintf("%s %s", $shipment_info['city'], $shipment_info['street']),
@@ -183,21 +176,6 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         return $shipment;
     }
 
-    private function getPaymentType($order_id)
-    {
-        $payment_id = (new shoporderParamsModel())->getByField(array(
-            'order_id' => $order_id,
-            'name' => 'payment_id'
-        ))['value'];
-        if (!isset($this->komtet_payment_types[$payment_id])) {
-            $this->writeLog(
-                sprintf("Payment ID [%s] not found in settings", $payment_id)
-            );
-            return false;
-        }
-        return $this->komtet_payment_types[$payment_id]['payment_type'];
-    }
-
     private function getPositionsInfo($order_id)
     {
         $order_positions = array_map(function ($position) {
@@ -223,7 +201,6 @@ class shopKomtetdeliveryPlugin extends shopPlugin
             'komtet_shop_id' => $this->komtet_shop_id,
             'komtet_secret_key' => $this->komtet_secret_key,
             'komtet_shipping' => $this->komtet_shipping,
-            'komtet_payment_types' => $this->komtet_payment_types,
         ];
         foreach ($options as $key => $value) {
             if (is_null($value) or $value === 0) {
