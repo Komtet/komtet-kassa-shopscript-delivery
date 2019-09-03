@@ -4,7 +4,7 @@ use Komtet\KassaSdk\CourierManager;
 use Komtet\KassaSdk\Exception\SdkException;
 
 
-class ShopKomtetDelivery
+class shopKomtetDelivery
 {
 
     const PLUGIN_ID = 'komtetdelivery';
