@@ -1,6 +1,6 @@
 <?php
 return array(
-    'komtet_delivery' => array(
+    'shop_komtetdelivery' => array(
         'order_id' => array('int', 11, 'null' => 0),
         'kk_id' => array('int', 11),
         'request' => array('text'),
