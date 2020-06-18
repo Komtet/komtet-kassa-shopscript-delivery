@@ -2,7 +2,7 @@
 
 $settings = array(
     'komtet_shop_id'  => array(
-        'title'        => "Идентификатор магазина",
+        'title'        => "ID магазина",
         'description'  => "Идентификатор вы найдете в личном кабинете КОМТЕТ: <a href='https://kassa.komtet.ru/manage/shops'>Магазины</a><br><br>",
         'value'        => '',
         'control_type' => waHtmlControl::INPUT,
