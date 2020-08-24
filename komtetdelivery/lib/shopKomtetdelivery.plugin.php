@@ -221,7 +221,10 @@ class shopKomtetdeliveryPlugin extends shopPlugin
     private function customerValidate($customer_info)
     {
         foreach ($customer_info as $key => $value) {
-            if (is_null($value)) {
+            if ($key == 'email' and is_null($value)) { 
+                return true;
+            } 
+            else if (is_null($value)) {
                 $this->writeLog(
                     sprintf("Customer field [%s] is empty", $key)
                 );
