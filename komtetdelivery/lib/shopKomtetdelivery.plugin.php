@@ -233,7 +233,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
             'oid' => $position['id'],
             'name' => $position['name'],
             'price' => round(floatval($position['price']), 2),
-            'quantity' => $quantity, //round(floatval($position['quantity']), 2),
+            'quantity' => $quantity,
             'vat' => $itemVatRate,
             'measure_name' => MEASURE_NAME
         ]);
