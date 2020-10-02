@@ -13,6 +13,8 @@ use Komtet\KassaSdk\Vat;
 const MEASURE_NAME = 'шт';
 const LOG_PATH = 'shop/komtetdelivery/shipment.log';
 const TYPE_SERVICE = 'service';
+const WA_VERSION_WITH_NOMENCLATURE = '1.13.7.514';
+const NOMENCLATURE = 'nomenclature_code';
 
 
 class shopKomtetdeliveryPlugin extends shopPlugin
@@ -37,6 +39,9 @@ class shopKomtetdeliveryPlugin extends shopPlugin
 
         $this->komtet_delivery_model = new shopKomtetdeliveryModel();
         $this->shop_order = new shopOrderModel();
+
+        //Получаем версию 
+        $this->wa_version = wa()->getVersion('webasyst');
     }
 
     public function shipment($params)
@@ -90,19 +95,22 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         }
         $orderDelivery->applyDiscount(round($order['discount'], 2));
 
-        $shipingVatRate = Vat::RATE_NO;
-        if ($this->komtet_tax_type === TaxSystem::COMMON) {
-            $shipingVatRate = strval(round($shipment_info['vat'], 2));
+        if ($order['shipping'] > 0) {
+            $shipingVatRate = Vat::RATE_NO;
+            if ($this->komtet_tax_type === TaxSystem::COMMON) {
+                $shipingVatRate = strval(round($shipment_info['vat'], 2));
+            }
+            $orderDelivery->addPosition(new OrderPosition([
+                'oid' => $shipment_info['id'],
+                'name' => $shipment_info['name'],
+                'price' => round(floatval($order['shipping']), 2),
+                'quantity' => 1,
+                'type' => TYPE_SERVICE,
+                'vat' => strval($shipingVatRate),
+                'measure_name' => MEASURE_NAME
+            ]));
         }
-        $orderDelivery->addPosition(new OrderPosition([
-            'oid' => $shipment_info['id'],
-            'name' => $shipment_info['name'],
-            'price' => round(floatval($order['shipping']), 2),
-            'quantity' => 1,
-            'type' => TYPE_SERVICE,
-            'vat' => strval($shipingVatRate),
-            'measure_name' => MEASURE_NAME
-        ]));
+
 
         $orderDelivery->setDeliveryTime(
             substr($shipment_info['date_start'], 0, -3),
@@ -178,21 +186,84 @@ class shopKomtetdeliveryPlugin extends shopPlugin
 
     private function getPositionsInfo($order_id)
     {
-        $order_positions = array_map(function ($position) {
-            $itemVatRate = Vat::RATE_NO;
-            if ($this->komtet_tax_type === TaxSystem::COMMON) {
-                $itemVatRate = strval(round($position['tax_percent'], 2));
+        /**
+         * Получение списка позиции для КОМТЕТ Касса
+         * @param int $order_id Идентификатор заказа в ShopScript
+         */
+
+        $order_positions = [];
+        $positions = (new shopOrderItemsModel())->getByField('order_id', $order_id, true);
+        foreach ($positions as $position) {
+            // Получаем коды маркировок
+            $nomenclatures = $this->getNomenclatureCodes($position['id']);
+
+            if (is_null($nomenclatures)) {
+                // Если нет маркировок, то проводим как обычную позицию
+                array_push(
+                    $order_positions,
+                    $this->generatePosition($position, round(floatval($position['quantity']), 2))
+                );
+            } else {
+                // Если позиция с маркировкой, то разбиваем позицию на единицы
+                for ($item = 0; $item < $position['quantity']; $item++) {
+                    $order_position = $this->generatePosition($position);
+                    $nomenclature_code = array_shift($nomenclatures);
+                    $order_position->setNomenclatureCode($nomenclature_code);
+                    array_push($order_positions, $order_position);
+                }
             }
-            return new OrderPosition([
-                'oid' => $position['id'],
-                'name' => $position['name'],
-                'price' => round(floatval($position['price']), 2),
-                'quantity' => round(floatval($position['quantity']), 2),
-                'vat' => $itemVatRate,
-                'measure_name' => MEASURE_NAME
-            ]);
-        }, (new shopOrderItemsModel())->getByField('order_id', $order_id, true));
+        }
         return $order_positions;
+    }
+
+    private function generatePosition($position, $quantity = 1)
+    {
+        /**
+         * Получение позиции заказа
+         * @param array $position Позиция в заказе ShopScript
+         * @param int|float $quantity Кол-во товара в позиции
+         */
+
+        $itemVatRate = Vat::RATE_NO;
+        if ($this->komtet_tax_type === TaxSystem::COMMON) {
+            $itemVatRate = strval(round($position['tax_percent'], 2));
+        }
+
+        return new OrderPosition([
+            'oid' => $position['id'],
+            'name' => $position['name'],
+            'price' => round(floatval($position['price']), 2),
+            'quantity' => $quantity, //round(floatval($position['quantity']), 2),
+            'vat' => $itemVatRate,
+            'measure_name' => MEASURE_NAME
+        ]);
+    }
+
+    private function getNomenclatureCodes($item_id)
+    {
+        /**
+         * Получение списка маркировок для позиции
+         * @param int $item_id Идентификатор позиции в заказе
+         */
+
+        $order = new shopOrder($this->order_id);
+        $nomenclatures = NULL;
+
+        if (
+            version_compare($this->wa_version, WA_VERSION_WITH_NOMENCLATURE, ">=") &&
+            $order['items_product_codes'][$item_id]['product_codes']
+        ) {
+            $order_items_codes = $order['items_product_codes'][$item_id]['product_codes'];
+            if (!empty($order_items_codes)) {
+                foreach ($order_items_codes as $v) {
+                    if ($v['code'] == NOMENCLATURE) {
+                        $nomenclatures = $v['values'];
+                    }
+                }
+            }
+        }
+
+        return $nomenclatures;
     }
 
     private function optionsValidate()
@@ -219,7 +290,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
     }
 
     private function customerValidate($customer_info)
-    {   
+    {
         $check_fields = array('fullname', 'phone');
         foreach ($check_fields as $field) {
             if (is_null($customer_info[$field])) {
