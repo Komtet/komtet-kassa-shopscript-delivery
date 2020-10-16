@@ -1,6 +1,8 @@
 <?php
+
 use Komtet\KassaSdk\Client;
-use Komtet\KassaSdk\CourierManager;
+use Komtet\KassaSdk\EmployeeManager;
+use Komtet\KassaSdk\EmployeeType;
 use Komtet\KassaSdk\Exception\SdkException;
 
 
@@ -61,9 +63,9 @@ class shopKomtetDelivery
             );
         }
 
-        $courierManager = new CourierManager(new Client($shop_id, $secret_key));
+        $employeeManager = new EmployeeManager(new Client($shop_id, $secret_key));
         try {
-            $kk_couriers = $courierManager->getCouriers('0', '100')['couriers'];
+            $kk_couriers = $employeeManager->getEmployees('0', '100', EmployeeType::COURIER)['account_employees'];
         } catch (SdkException $e) {
             return waHtmlControl::getControl(
                 waHtmlControl::TITLE,
