@@ -24,7 +24,7 @@ $settings = array(
     'komtet_complete_action'  => array(
         'title'        => " Формировать заявку на доставку при статусе 'Отправлен'",
         'description'  => "Создавать заказы на доствку в КОМТЕТ Касса Курьер при изменение статус заказа " .
-                "на 'Отгружен'.<br><br>",
+                "на 'Отправлен'.<br><br>",
         'value'        => 1,
         'control_type' => waHtmlControl::CHECKBOX,
     ),

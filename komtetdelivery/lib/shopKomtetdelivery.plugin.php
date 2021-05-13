@@ -47,6 +47,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin
     public function shipment($params)
     {
         $this->init();
+        $plugin = wa()->getPlugin('komtetdelivery');
+        $plugin->writeLog('testtttttt');
         $this->order_id = $params['order_id'];
         $order = $this->shop_order->getById($params['order_id']);
 
@@ -76,7 +78,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         }
 
         $orderDelivery = new Order(
-            $this->order_id,
+            $this->order_id.'testShopScriptDelivery',
             'new',
             $this->komtet_tax_type,
             !is_null($order['paid_date']),
