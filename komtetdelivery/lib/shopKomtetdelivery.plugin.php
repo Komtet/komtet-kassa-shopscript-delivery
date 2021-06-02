@@ -77,8 +77,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin
 
         $orderDelivery = new Order(
             $this->order_id,
-            'new',
             $this->komtet_tax_type,
+            'new',
             !is_null($order['paid_date']),
             0
         );
