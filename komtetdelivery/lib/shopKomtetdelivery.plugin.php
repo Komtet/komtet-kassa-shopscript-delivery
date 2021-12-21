@@ -82,6 +82,9 @@ class shopKomtetdeliveryPlugin extends shopPlugin
             !is_null($order['paid_date']),
             0
         );
+
+        $customer_info['phone'] = $this->formatingPhoneNumber($customer_info['phone']);
+
         $orderDelivery->setClient(
             sprintf("%s %s", $shipment_info['city'], $shipment_info['street']),
             $customer_info['phone'],
@@ -264,6 +267,19 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         }
 
         return $nomenclatures;
+    }
+
+    private function formatingPhoneNumber($phone_number) {
+        if (!empty($phone_number)) {
+            if ($phone_number[0] == "7") {
+                $phone_number = "+{$phone_number}";
+            }
+            elseif ($phone_number[0] == "8") {
+                $phone_number[0] = "7";
+                $phone_number = "+{$phone_number}";
+            }
+        }
+        return $phone_number;
     }
 
     private function optionsValidate()
