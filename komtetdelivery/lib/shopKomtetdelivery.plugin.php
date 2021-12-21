@@ -271,12 +271,11 @@ class shopKomtetdeliveryPlugin extends shopPlugin
 
     private function formatingPhoneNumber($phone_number) {
         if (!empty($phone_number)) {
-            if ($phone_number[0] == "7") {
-                $phone_number = "+{$phone_number}";
+            if ($phone_number[0] == "7" | $phone_number[0] == "8") {
+                $phone_number = "+7" . substr($phone_number, 1); 
             }
-            elseif ($phone_number[0] == "8") {
-                $phone_number[0] = "7";
-                $phone_number = "+{$phone_number}";
+            elseif (strlen($phone_number) == 10) {
+                $phone_number = "+7{$phone_number}";
             }
         }
         return $phone_number;
