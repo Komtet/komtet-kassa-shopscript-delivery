@@ -17,6 +17,7 @@ const WA_VERSION_WITH_NOMENCLATURE = '1.13.7.514';
 const NOMENCLATURE = 'nomenclature_code';
 const PHONE_REGEXP = "/^(8|\+?7|7)?(\d{3}?\d{7,10})$/";
 
+
 class shopKomtetdeliveryPlugin extends shopPlugin
 {
     private $komtet_shop_id;
