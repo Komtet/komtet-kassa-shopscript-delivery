@@ -15,6 +15,7 @@ const LOG_PATH = 'shop/komtetdelivery/shipment.log';
 const TYPE_SERVICE = 'service';
 const WA_VERSION_WITH_NOMENCLATURE = '1.13.7.514';
 const NOMENCLATURE = 'nomenclature_code';
+const PHONE_REGEXP = "/^(8|\+?7|7)?(\d{3}?\d{7,10})$/";
 
 
 class shopKomtetdeliveryPlugin extends shopPlugin
@@ -82,6 +83,9 @@ class shopKomtetdeliveryPlugin extends shopPlugin
             !is_null($order['paid_date']),
             0
         );
+
+        $customer_info['phone'] = $this->validatePhone($customer_info['phone']);  
+
         $orderDelivery->setClient(
             sprintf("%s %s", $shipment_info['city'], $shipment_info['street']),
             $customer_info['phone'],
@@ -265,6 +269,14 @@ class shopKomtetdeliveryPlugin extends shopPlugin
 
         return $nomenclatures;
     }
+
+    private function validatePhone($phone) {
+        if (preg_match(PHONE_REGEXP, $phone, $matches)) {
+            return "+7".$matches[2];
+        } else {
+            return null;
+        }
+     }
 
     private function optionsValidate()
     {
