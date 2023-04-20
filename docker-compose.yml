@@ -1,7 +1,6 @@
 version: '3.4'
 
 services:
-
   db:
     image: mysql:5.7
     container_name: db
@@ -10,10 +9,23 @@ services:
       MYSQL_DATABASE: test_db
       MYSQL_USER: devuser
       MYSQL_PASSWORD: devpass
+    depends_on:
+      - phpmyadmin
     volumes:
       - ./data/mysql:/var/lib/mysql
     ports:
-      - "9906:3306"
+      - '9906:3306'
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: 'db'
+      PMA_USER: 'devuser'
+      PMA_PASSWORD: 'devpass'
 
   web5:
     image: ss_web:last
@@ -26,7 +38,7 @@ services:
     volumes:
       - ./php/:/var/www/html/
     ports:
-      - "8110:80"
+      - '8110:80'
     links:
       - db:mysql
     stdin_open: true
@@ -43,7 +55,7 @@ services:
     volumes:
       - ./php/:/var/www/html/
     ports:
-      - "8110:80"
+      - '8110:80'
     links:
       - db:mysql
     stdin_open: true

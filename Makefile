@@ -9,10 +9,10 @@ build:  ## Собрать контейнер
 stop: ## Остановить все контейнеры
 	@docker-compose down
 
-start_web5: stop  ## Запустить контейнер
+start_web5: stop  ## Запустить контейнер на php 5.6
 	@docker-compose up -d web5
 
-start_web7: stop  ## Запустить контейнер
+start_web7: stop  ## Запустить контейнер на php 7.4
 	@docker-compose up -d web7
 
 update:  ## Установить/Обновить модуль
