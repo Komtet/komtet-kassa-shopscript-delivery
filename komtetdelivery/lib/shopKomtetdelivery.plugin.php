@@ -36,12 +36,12 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         $this->komtet_tax_type = (int)$this->getSettings('komtet_tax_type');
         $this->komtet_complete_action = (bool)$this->getSettings('komtet_complete_action');
         $this->komtet_default_courier = (int)$this->getSettings('komtet_default_courier');
-        $this->komtet_shipping = (int)$this->getSettings('komtet_shipping');
+        $this->komtet_shipping = $this->getSettings('komtet_shipping');
 
         $this->komtet_delivery_model = new shopKomtetdeliveryModel();
         $this->shop_order = new shopOrderModel();
 
-        //Получаем версию 
+        //Получаем версию
         $this->wa_version = wa()->getVersion('webasyst');
     }
 
@@ -84,7 +84,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
             0
         );
 
-        $customer_info['phone'] = $this->validatePhone($customer_info['phone']);  
+        $customer_info['phone'] = $this->validatePhone($customer_info['phone']);
 
         $orderDelivery->setClient(
             sprintf("%s %s", $shipment_info['city'], $shipment_info['street']),
@@ -270,13 +270,14 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         return $nomenclatures;
     }
 
-    private function validatePhone($phone) {
+    private function validatePhone($phone)
+    {
         if (preg_match(PHONE_REGEXP, $phone, $matches)) {
-            return "+7".$matches[2];
+            return "+7" . $matches[2];
         } else {
             return null;
         }
-     }
+    }
 
     private function optionsValidate()
     {
@@ -335,7 +336,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin
                 return false;
             }
         }
-        if (intval($shipment_info['id']) !== $this->komtet_shipping) {
+
+        if (!in_array(intval($shipment_info['id']), array_keys($this->komtet_shipping))) {
             $this->writeLog(
                 sprintf(
                     "Shipmnent id [%s] not equal to settings [%d]",

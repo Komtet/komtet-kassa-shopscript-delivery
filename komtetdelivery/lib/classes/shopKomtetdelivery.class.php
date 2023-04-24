@@ -107,9 +107,7 @@ class shopKomtetDelivery
         $shippings = array(
             'namespace' => $namespace,
             'value' => isset($shipping) ? $shipping : 0,
-            'options' => array(
-                array('value' => 0, 'title' => 'Не выбрано')
-            )
+            'options' => array()
         );
 
         $sc_shipments = (new shopPluginModel())->listPlugins('shipping');
@@ -121,7 +119,7 @@ class shopKomtetDelivery
         }
 
         return waHtmlControl::getControl(
-            waHtmlControl::SELECT,
+            waHtmlControl::GROUPBOX,
             'komtet_shipping',
             $shippings
         );
