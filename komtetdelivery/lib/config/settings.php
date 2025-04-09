@@ -3,15 +3,15 @@
 $settings = array(
     'komtet_shop_id'  => array(
         'title'        => "ID магазина",
-        'description'  => "Идентификатор вы найдете в личном кабинете КОМТЕТ: " .
-            "<a target=_blank href='https://kassa.komtet.ru/manage/shops'>Магазины</a><br><br>",
+        'description'  => "Идентификатор вы найдете в личном кабинете КОМТЕТ " .
+            "в разделе \"Фискализация->Магазины\"<br><br>",
         'value'        => '',
         'control_type' => waHtmlControl::INPUT,
     ),
     'komtet_secret_key'  => array(
         'title'        => "Секретный ключ магазина",
-        'description'  => "Ключ вы найдете в личном кабинете КОМТЕТ, в настройках выбранного магазина: " .
-            "<a target=_blank href='https://kassa.komtet.ru/manage/shops'>Магазины</a><br><br>",
+        'description'  => "Ключ вы найдете в личном кабинете КОМТЕТ " .
+            "в разделе \"Фискализация->Магазины\"<br><br>",
         'value'        => '',
         'control_type' => waHtmlControl::INPUT,
     ),
@@ -21,6 +21,12 @@ $settings = array(
         'value'        => 0,
         'control_type' => waHtmlControl::SELECT,
         'options_callback' => array('shopKomtetdelivery', 'taxTypesValues')
+    ),
+    'komtet_delivery_tax'  => array(
+        'title'        => "Ставка налога услуги \"Доставка\"",
+        'value'        => 'no', // значение по умолчанию
+        'control_type' => waHtmlControl::SELECT,
+        'options_callback' => array('shopKomtetdelivery', 'vatValues')
     ),
     'komtet_complete_action'  => array(
         'title'        => " Формировать заявку на доставку при статусе 'Отправлен'",

@@ -3,15 +3,15 @@
 require __DIR__ . '/vendors/komtet-kassa-php-sdk/autoload.php';
 
 use Komtet\KassaSdk\Exception\SdkException;
-use Komtet\KassaSdk\Client;
-use Komtet\KassaSdk\Order;
-use Komtet\KassaSdk\OrderManager;
-use Komtet\KassaSdk\OrderPosition;
-use Komtet\KassaSdk\TaxSystem;
-use Komtet\KassaSdk\Vat;
+use Komtet\KassaSdk\v1\Client;
+use Komtet\KassaSdk\v1\Order;
+use Komtet\KassaSdk\v1\OrderManager;
+use Komtet\KassaSdk\v1\OrderPosition;
+use Komtet\KassaSdk\v1\TaxSystem;
+use Komtet\KassaSdk\v1\Vat;
 
 const MEASURE_NAME = 'шт';
-const LOG_PATH = 'shop/komtetdelivery/shipment.log';
+const LOG_PATH = 'shop/plugins/komtetdelivery/shipment.log';
 const TYPE_SERVICE = 'service';
 const WA_VERSION_WITH_NOMENCLATURE = '1.13.7.514';
 const NOMENCLATURE = 'nomenclature_code';
@@ -23,6 +23,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
     private $komtet_shop_id;
     private $komtet_secret_key;
     private $komtet_tax_type;
+    private $komtet_delivery_tax;
     private $komtet_complete_action;
     private $komtet_default_courier;
     private $komtet_shipping;
@@ -34,6 +35,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         $this->komtet_shop_id = $this->getSettings('komtet_shop_id');
         $this->komtet_secret_key = $this->getSettings('komtet_secret_key');
         $this->komtet_tax_type = (int)$this->getSettings('komtet_tax_type');
+        $this->komtet_delivery_tax = (int)$this->getSettings('komtet_delivery_tax');
         $this->komtet_complete_action = (bool)$this->getSettings('komtet_complete_action');
         $this->komtet_default_courier = (int)$this->getSettings('komtet_default_courier');
         $this->komtet_shipping = $this->getSettings('komtet_shipping');
@@ -101,8 +103,17 @@ class shopKomtetdeliveryPlugin extends shopPlugin
 
         if ($order['shipping'] > 0) {
             $shipingVatRate = Vat::RATE_NO;
-            if ($this->komtet_tax_type === TaxSystem::COMMON) {
-                $shipingVatRate = strval(round($shipment_info['vat'], 2));
+            try {
+                $shipingVatRate = $this->komtet_delivery_tax;
+            } catch (SdkException $e) {
+                $this->writeLog($e);
+
+                if ($this->komtet_tax_type === TaxSystem::COMMON) {
+                    $shipingVatRate = strval(round($shipment_info['vat'], 2));
+                }
+                else {
+                    $shipingVatRate = Vat::RATE_NO;
+                }
             }
             $orderDelivery->addPosition(new OrderPosition([
                 'oid' => $shipment_info['id'],
@@ -110,11 +121,10 @@ class shopKomtetdeliveryPlugin extends shopPlugin
                 'price' => round(floatval($order['shipping']), 2),
                 'quantity' => 1,
                 'type' => TYPE_SERVICE,
-                'vat' => strval($shipingVatRate),
+                'vat' => $shipingVatRate,
                 'measure_name' => MEASURE_NAME
             ]));
         }
-
 
         $orderDelivery->setDeliveryTime(
             substr($shipment_info['date_start'], 0, -3),

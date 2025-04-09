@@ -1,9 +1,11 @@
 <?php
 
-use Komtet\KassaSdk\Client;
-use Komtet\KassaSdk\EmployeeManager;
-use Komtet\KassaSdk\EmployeeType;
 use Komtet\KassaSdk\Exception\SdkException;
+use Komtet\KassaSdk\Exception\ApiValidationException;
+use Komtet\KassaSdk\v1\Client;
+use Komtet\KassaSdk\v1\EmployeeManager;
+use Komtet\KassaSdk\v1\EmployeeType;
+use Komtet\KassaSdk\v1\Vat;
 
 
 class shopKomtetDelivery
@@ -43,6 +45,52 @@ class shopKomtetDelivery
         return $data;
     }
 
+    public static function vatValues() {
+        $data = array(
+            array(
+                'value' => Vat::RATE_NO,
+                'title' => 'Без НДС',
+            ),
+            array(
+                'value' => Vat::RATE_0,
+                'title' => 'НДС 0%',
+            ),
+            array(
+                'value' => Vat::RATE_5,
+                'title' => 'НДС 5%',
+            ),
+            array(
+                'value' => Vat::RATE_7,
+                'title' => 'НДС 7%',
+            ),
+            array(
+                'value' => Vat::RATE_10,
+                'title' => 'НДС 10%',
+            ),
+            array(
+                'value' => Vat::RATE_20,
+                'title' => 'НДС 20%',
+            ),
+            array(
+                'value' => Vat::RATE_105,
+                'title' => 'НДС 5/105',
+            ),
+            array(
+                'value' => Vat::RATE_107,
+                'title' => 'НДС 7/107',
+            ),
+            array(
+                'value' => Vat::RATE_110,
+                'title' => 'НДС 10/110',
+            ),
+            array(
+                'value' => Vat::RATE_120,
+                'title' => 'НДС 20/120',
+            )
+    );
+        return $data;
+    }
+
     public static function getCourierList()
     {
         $plugin = waSystem::getInstance()->getPlugin(self::PLUGIN_ID, true);
@@ -57,22 +105,21 @@ class shopKomtetDelivery
                 waHtmlControl::TITLE,
                 'komtet_default_courier',
                 array(
-                    'value' => "Заполните 'Идентификатор магазина' и 'Секретный ключ магазина' " .
+                    'value' => "Заполните 'ID магазина' и 'Секретный ключ магазина' " .
                         "сохраните изменения и обновите страницу",
                 )
             );
         }
 
-        $employeeManager = new EmployeeManager(new Client($shop_id, $secret_key));
         try {
+            $employeeManager = new EmployeeManager(new Client($shop_id, $secret_key));
             $kk_couriers = $employeeManager->getEmployees('0', '100', EmployeeType::COURIER)['account_employees'];
-        } catch (SdkException $e) {
+        } catch (SdkException | ApiValidationException $e) {
             return waHtmlControl::getControl(
                 waHtmlControl::TITLE,
                 'komtet_default_courier',
                 array(
-                    'value' => "'Идентификатор магазина' или 'Секретный ключ магазина' " .
-                        "введены неверно",
+                    'value' => "'ID магазина' или 'Секретный ключ магазина' введены неверно",
                 )
             );
         }

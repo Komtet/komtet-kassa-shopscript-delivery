@@ -9,11 +9,11 @@ build:  ## Собрать контейнер
 stop: ## Остановить все контейнеры
 	@docker-compose down
 
-start_web5: stop  ## Запустить контейнер на php 5.6
-	@docker-compose up -d web5
-
 start_web7: stop  ## Запустить контейнер на php 7.4
-	@docker-compose up -d web7
+	@docker-compose up web7
+
+start_web8: stop  ## Запустить контейнер на php 8
+	@docker-compose up web8
 
 update:  ## Установить/Обновить модуль
 	@rm -rf php/wa-apps/shop/plugins/komtetdelivery &&\

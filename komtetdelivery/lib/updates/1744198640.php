@@ -1,16 +1,8 @@
 <?php
-$model = new waModel();
+
 $pluginId = 'shop.komtetdelivery';
 $settingName = 'komtet_delivery_tax';
 $defaultTax = 'no';
-
-try {
-    $sql = "SELECT `fiscalised` FROM `shop_order` WHERE 0";
-    $model->query($sql);
-} catch (waDbException $ex) {
-    $sql = "ALTER TABLE `shop_order` ADD COLUMN `fiscalised` TINYINT(1) NOT NULL DEFAULT '0' AFTER `state_id`";
-    $model->query($sql);
-}
 
 try {
 
@@ -30,5 +22,5 @@ try {
         $settingsModel->insert($newSetting);
     }
 } catch (Exception $e) {
-    waLog::log("Error while adding setting: " . $e->getMessage() . "\n", 'db.log');
+    waLog::log("Error while updating setting: " . $e->getMessage() . "\n", 'db.log');
 }
