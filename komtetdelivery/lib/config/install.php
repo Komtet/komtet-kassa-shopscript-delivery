@@ -1,8 +1,6 @@
 <?php
 $model = new waModel();
 $pluginId = 'shop.komtetdelivery';
-$settingName = 'komtet_delivery_tax';
-$defaultTax = 'no';
 
 try {
     $sql = "SELECT `fiscalised` FROM `shop_order` WHERE 0";
@@ -12,19 +10,22 @@ try {
     $model->query($sql);
 }
 
+# Миграция с добавлением настройки налоговой ставки позиции доставки
 try {
+    $migrationDeliveryTaxSettingName = 'komtet_delivery_tax';
+    $defaultTax = 'no';
 
     $settingsModel = new waAppSettingsModel();
 
     $existingSetting = $settingsModel->getByField([
         'app_id' => $pluginId,
-        'name' => $settingName,
+        'name' => $migrationDeliveryTaxSettingName,
     ]);
 
     if (!$existingSetting) {
         $newSetting = [
             'app_id' => $pluginId,
-            'name' => $settingName,
+            'name' => $migrationDeliveryTaxSettingName,
             'value' => json_encode(['value' => $defaultTax]),
         ];
         $settingsModel->insert($newSetting);

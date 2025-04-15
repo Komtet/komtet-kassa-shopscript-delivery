@@ -111,10 +111,8 @@ class shopKomtetdeliveryPlugin extends shopPlugin
                 if ($this->komtet_tax_type === TaxSystem::COMMON) {
                     $shipingVatRate = strval(round($shipment_info['vat'], 2));
                 }
-                else {
-                    $shipingVatRate = Vat::RATE_NO;
-                }
             }
+
             $orderDelivery->addPosition(new OrderPosition([
                 'oid' => $shipment_info['id'],
                 'name' => $shipment_info['name'],
