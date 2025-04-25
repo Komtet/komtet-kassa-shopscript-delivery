@@ -1,48 +1,31 @@
 version: '3.4'
 
 services:
-  db:
+  shopscript_delivery_db:
     image: mysql:5.7
-    container_name: db
+    container_name: shopscript_delivery_db
     environment:
       MYSQL_ROOT_PASSWORD: my_secret_pw_shh
       MYSQL_DATABASE: test_db
       MYSQL_USER: devuser
       MYSQL_PASSWORD: devpass
     depends_on:
-      - phpmyadmin
+      - shopscript_delivery_phpmyadmin
     volumes:
       - ./data/mysql:/var/lib/mysql
     ports:
       - '9906:3306'
 
-  phpmyadmin:
+  shopscript_delivery_phpmyadmin:
     image: phpmyadmin
-    container_name: phpmyadmin
+    container_name: shopscript_delivery_phpmyadmin
     restart: always
     ports:
       - 8081:80
     environment:
-      PMA_HOST: 'db'
+      PMA_HOST: 'shopscript_delivery_db'
       PMA_USER: 'devuser'
       PMA_PASSWORD: 'devpass'
-
-  web5:
-    image: ss_web:last
-    build:
-      context: .
-      target: php5
-    container_name: web5
-    depends_on:
-      - db
-    volumes:
-      - ./php/:/var/www/html/
-    ports:
-      - '8110:80'
-    links:
-      - db:mysql
-    stdin_open: true
-    tty: true
 
   web7:
     image: ss_web:last
@@ -51,12 +34,29 @@ services:
       target: php7
     container_name: web7
     depends_on:
-      - db
+      - shopscript_delivery_db
     volumes:
       - ./php/:/var/www/html/
     ports:
       - '8110:80'
     links:
-      - db:mysql
+      - shopscript_delivery_db:mysql
+    stdin_open: true
+    tty: true
+
+  web8:
+    image: ss_web:last
+    build:
+      context: .
+      target: php8
+    container_name: web8
+    depends_on:
+      - shopscript_delivery_db
+    volumes:
+      - ./php/:/var/www/html/
+    ports:
+      - "8110:80"
+    links:
+      - shopscript_delivery_db:mysql
     stdin_open: true
     tty: true

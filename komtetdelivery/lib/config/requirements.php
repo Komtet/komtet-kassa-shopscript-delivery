@@ -13,6 +13,6 @@ return array(
     ),
     'php' => array(
         'strict' => true,
-        'version' => '>=5.6.38',
+        'version' => '>=7.4.33',
     ),
 );

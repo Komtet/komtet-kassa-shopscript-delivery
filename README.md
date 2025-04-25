@@ -14,7 +14,7 @@ sudo cp [путь_до_проекта]/komtet-kassa-shopscript-delivery/configur
 
 - Cоздать в корневом каталоге папку php
 - Распаковать архив Shopscript CMS в папку php
-- В файл /php/.htaccess добавить строчку: _php_value date.timezone 'Europe/Moscow_
+- В файл /php/.htaccess добавить строчку: php_value date.timezone 'Europe/Moscow'
 
 - Запустить сборку проекта
 
@@ -54,16 +54,16 @@ sudo chmod -R 777 php
 make build
 ```
 
-- Запустить проект на php5.6
-
-```sh
-make start_web5
-```
-
 - Запустить проект на php7.4
 
 ```sh
 make start_web7
+```
+
+- Запустить проект на php8
+
+```sh
+make start_web8
 ```
 
 - Остановить проект
