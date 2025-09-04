@@ -3,6 +3,7 @@ version: '3.4'
 services:
   shopscript_delivery_db:
     image: mysql:5.7
+    platform: linux/amd64
     container_name: shopscript_delivery_db
     environment:
       MYSQL_ROOT_PASSWORD: my_secret_pw_shh
@@ -18,6 +19,7 @@ services:
 
   shopscript_delivery_phpmyadmin:
     image: phpmyadmin
+    platform: linux/amd64
     container_name: shopscript_delivery_phpmyadmin
     restart: always
     ports:
@@ -29,6 +31,7 @@ services:
 
   web7:
     image: ss_web:last
+    platform: linux/amd64
     build:
       context: .
       target: php7
@@ -46,6 +49,7 @@ services:
 
   web8:
     image: ss_web:last
+    platform: linux/amd64
     build:
       context: .
       target: php8
