@@ -14,7 +14,7 @@ const MEASURE_NAME = 'шт';
 const LOG_PATH = 'shop/plugins/komtetdelivery/shipment.log';
 const TYPE_SERVICE = 'service';
 const WA_VERSION_WITH_NOMENCLATURE = '1.13.7.514';
-const NOMENCLATURE = 'nomenclature_code';
+const NOMENCLATURE_CODES = ['nomenclature_code', 'chestnyznak'];
 const PHONE_REGEXP = "/^(8|\+?7|7)?(\d{3}?\d{7,10})$/";
 
 
@@ -259,7 +259,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin {
             $order_items_codes = $order['items_product_codes'][$item_id]['product_codes'];
             if (!empty($order_items_codes)) {
                 foreach ($order_items_codes as $v) {
-                    if ($v['code'] == NOMENCLATURE) {
+                    if (in_array($v['code'], NOMENCLATURE_CODES, true)) {
                         $nomenclatures = $v['values'];
                     }
                 }
