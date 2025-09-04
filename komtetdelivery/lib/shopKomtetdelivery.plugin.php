@@ -18,8 +18,7 @@ const NOMENCLATURE = 'nomenclature_code';
 const PHONE_REGEXP = "/^(8|\+?7|7)?(\d{3}?\d{7,10})$/";
 
 
-class shopKomtetdeliveryPlugin extends shopPlugin
-{
+class shopKomtetdeliveryPlugin extends shopPlugin {
     private $komtet_shop_id;
     private $komtet_secret_key;
     private $komtet_tax_type;
@@ -30,12 +29,11 @@ class shopKomtetdeliveryPlugin extends shopPlugin
 
     private $order_id;
 
-    private function init()
-    {
+    private function init() {
         $this->komtet_shop_id = $this->getSettings('komtet_shop_id');
         $this->komtet_secret_key = $this->getSettings('komtet_secret_key');
         $this->komtet_tax_type = (int)$this->getSettings('komtet_tax_type');
-        $this->komtet_delivery_tax = (int)$this->getSettings('komtet_delivery_tax');
+        $this->komtet_delivery_tax = $this->getSettings('komtet_delivery_tax');
         $this->komtet_complete_action = (bool)$this->getSettings('komtet_complete_action');
         $this->komtet_default_courier = (int)$this->getSettings('komtet_default_courier');
         $this->komtet_shipping = $this->getSettings('komtet_shipping');
@@ -47,8 +45,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         $this->wa_version = wa()->getVersion('webasyst');
     }
 
-    public function shipment($params)
-    {
+    public function shipment($params) {
         $this->init();
         $this->order_id = $params['order_id'];
         $order = $this->shop_order->getById($params['order_id']);
@@ -102,15 +99,12 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         $orderDelivery->applyDiscount(round($order['discount'], 2));
 
         if ($order['shipping'] > 0) {
-            $shipingVatRate = Vat::RATE_NO;
-            try {
-                $shipingVatRate = $this->komtet_delivery_tax;
-            } catch (SdkException $e) {
-                $this->writeLog($e);
+            $shipingVatRate = $this->komtet_delivery_tax === 'from_settings'
+                ? $shipment_info['vat']
+                : $this->komtet_delivery_tax;
 
-                if ($this->komtet_tax_type === TaxSystem::COMMON) {
-                    $shipingVatRate = strval(round($shipment_info['vat'], 2));
-                }
+            if ($this->komtet_delivery_tax === 'from_settings' && !$this->vatValidate($shipingVatRate)) {
+                return false;
             }
 
             $orderDelivery->addPosition(new OrderPosition([
@@ -160,8 +154,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         }
     }
 
-    private function getCustomerInfo($customer_id)
-    {
+    private function getCustomerInfo($customer_id) {
         $wa_contact = new waContactModel();
         $wa_contact_data = new waContactDataModel();
         $wa_contact_emails = new waContactEmailsModel();
@@ -174,8 +167,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         return $customer;
     }
 
-    private function getShipmentInfo($order_id)
-    {
+    private function getShipmentInfo($order_id) {
         $shop_order_params = (new shoporderParamsModel())->getByField('order_id', $order_id, true);
 
         $params = array();
@@ -191,13 +183,14 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         $shipment['id'] = $params['shipping_id'];
 
         $shipment['name'] = $params['shipping_name'];
-        $shipment['vat'] = array_key_exists('shipping_tax_percent', $params) ? $params['shipping_tax_percent'] : Vat::RATE_NO;
+        $shipment['vat'] = array_key_exists('shipping_tax_percent', $params)
+            ? $params['shipping_tax_percent']
+            : Vat::RATE_NO;
 
         return $shipment;
     }
 
-    private function getPositionsInfo($order_id)
-    {
+    private function getPositionsInfo($order_id) {
         /**
          * Получение списка позиции для КОМТЕТ Касса
          * @param int $order_id Идентификатор заказа в ShopScript
@@ -228,17 +221,16 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         return $order_positions;
     }
 
-    private function generatePosition($position, $quantity = 1)
-    {
+    private function generatePosition($position, $quantity = 1) {
         /**
          * Получение позиции заказа
          * @param array $position Позиция в заказе ShopScript
          * @param int|float $quantity Кол-во товара в позиции
          */
 
-        $itemVatRate = Vat::RATE_NO;
-        if ($this->komtet_tax_type === TaxSystem::COMMON) {
-            $itemVatRate = strval(round($position['tax_percent'], 2));
+        $itemVatRate = $position['tax_percent'] ?? Vat::RATE_NO;
+        if (!$this->vatValidate($itemVatRate)) {
+            return false;
         }
 
         return new OrderPosition([
@@ -251,8 +243,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         ]);
     }
 
-    private function getNomenclatureCodes($item_id)
-    {
+    private function getNomenclatureCodes($item_id) {
         /**
          * Получение списка маркировок для позиции
          * @param int $item_id Идентификатор позиции в заказе
@@ -278,8 +269,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         return $nomenclatures;
     }
 
-    private function validatePhone($phone)
-    {
+    private function validatePhone($phone) {
         if (preg_match(PHONE_REGEXP, $phone, $matches)) {
             return "+7" . $matches[2];
         } else {
@@ -287,8 +277,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         }
     }
 
-    private function optionsValidate()
-    {
+    private function optionsValidate() {
         $options = [
             'komtet_shop_id' => $this->komtet_shop_id,
             'komtet_secret_key' => $this->komtet_secret_key,
@@ -310,8 +299,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         return true;
     }
 
-    private function customerValidate($customer_info)
-    {
+    private function customerValidate($customer_info) {
         $check_fields = array('fullname', 'phone');
         foreach ($check_fields as $field) {
             if (is_null($customer_info[$field])) {
@@ -329,8 +317,7 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         return true;
     }
 
-    private function shipmentValidate($shipment_info)
-    {
+    private function shipmentValidate($shipment_info) {
         foreach ($shipment_info as $key => $value) {
             if (is_null($value)) {
                 $this->writeLog(
@@ -358,16 +345,31 @@ class shopKomtetdeliveryPlugin extends shopPlugin
         return true;
     }
 
-    public function getCallbackUrl($order_id)
-    {
+    private function vatValidate($vatRate) {
+        try {
+            $vat = new Vat($vatRate);
+            return true;
+        } catch (\InvalidArgumentException $e) {
+            $this->writeLog(
+                sprintf("Invalid VAT rate from shop settings: %s. Error: %s", $vatRate, $e->getMessage())
+            );
+            $this->komtet_delivery_model->updateByField(
+                'order_id',
+                $this->order_id,
+                array('request', 'vat validation error')
+            );
+            return false;
+        }
+    }
+
+    public function getCallbackUrl($order_id) {
         $routing = wa()->getRouting();
         $rootUrl = $routing->getUrl('shop/frontend', array(), true);
 
         return sprintf("%s%s/%s/", $rootUrl, $this->id, $order_id);
     }
 
-    public function writeLog($message)
-    {
+    public function writeLog($message) {
         if (is_string($message)) {
             waLog::log($message, LOG_PATH);
         } else {

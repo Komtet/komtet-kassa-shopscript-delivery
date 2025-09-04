@@ -21,8 +21,8 @@ update:  ## Установить/Обновить модуль
 
 release:  ## Архивировать для загрузки в маркет
 	@tar\
-	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/.*'\
 	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/docker_env'\
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/examples'\
 	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/tests'\
 	 -czvf komtetdelivery.tar.gz komtetdelivery/
 
