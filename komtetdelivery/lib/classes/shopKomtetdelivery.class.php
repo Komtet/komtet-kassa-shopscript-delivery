@@ -30,12 +30,8 @@ class shopKomtetDelivery
                 'title' => 'УСН доход - расход',
             ),
             array(
-                'value' => 3,
-                'title' => 'ЕНВД',
-            ),
-            array(
                 'value' => 4,
-                'title' => 'ЕСН',
+                'title' => 'ЕСХН',
             ),
             array(
                 'value' => 5,
@@ -47,6 +43,10 @@ class shopKomtetDelivery
 
     public static function vatValues() {
         $data = array(
+            array(
+                'value' => 'from_settings',
+                'title' => 'НДС из настроек доставки',
+            ),
             array(
                 'value' => Vat::RATE_NO,
                 'title' => 'Без НДС',
@@ -70,24 +70,8 @@ class shopKomtetDelivery
             array(
                 'value' => Vat::RATE_20,
                 'title' => 'НДС 20%',
-            ),
-            array(
-                'value' => Vat::RATE_105,
-                'title' => 'НДС 5/105',
-            ),
-            array(
-                'value' => Vat::RATE_107,
-                'title' => 'НДС 7/107',
-            ),
-            array(
-                'value' => Vat::RATE_110,
-                'title' => 'НДС 10/110',
-            ),
-            array(
-                'value' => Vat::RATE_120,
-                'title' => 'НДС 20/120',
             )
-    );
+        );
         return $data;
     }
 
