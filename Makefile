@@ -1,5 +1,7 @@
 SHELL:=/bin/bash
 
+FILENAME=komtetdelivery.tar.gz
+
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[0;36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
@@ -20,11 +22,19 @@ update:  ## Установить/Обновить модуль
 	 cp -r komtetdelivery php/wa-apps/shop/plugins
 
 release:  ## Архивировать для загрузки в маркет
-	@tar\
-	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/docker_env'\
-	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/examples'\
-	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/tests'\
-	 -czvf komtetdelivery.tar.gz komtetdelivery/
+	@mkdir -p dist
+	@rm -f dist/$(FILENAME) || true
+	@tar \
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/docker_env' \
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/examples' \
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/tests' \
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/.git' \
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/.gitattributes' \
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/.gitignore' \
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/README.md' \
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/RELEASE.md' \
+	 --exclude='komtetdelivery/lib/vendors/komtet-kassa-php-sdk/phpunit.xml' \
+	 -czvf dist/$(FILENAME) komtetdelivery/
 
-.PHONY: help
+.PHONY: help release
 .DEFAULT_GOAL := help
