@@ -19,7 +19,9 @@ start_web8: stop  ## Запустить контейнер на php 8
 
 update:  ## Установить/Обновить модуль
 	@rm -rf php/wa-apps/shop/plugins/komtetdelivery &&\
-	 cp -r komtetdelivery php/wa-apps/shop/plugins
+	 echo "Старая папка удалена"
+	@cp -r komtetdelivery php/wa-apps/shop/plugins &&\
+	 echo "Новая папка скопирована"
 
 release:  ## Архивировать для загрузки в маркет
 	@mkdir -p dist
